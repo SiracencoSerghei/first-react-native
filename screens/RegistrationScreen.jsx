@@ -8,54 +8,100 @@ import {
     TextInput,
     Pressable,
     KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+  Keyboard,
+  Button,
   } from "react-native";
   import photoBG from "../photo/photoBG.jpg";
   import avatar from "../photo/avatar.jpg";
   import Icon from "react-native-vector-icons/AntDesign";
-  
+
   export const RegistrationScreen = () => {
     const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [focusedInput, setFocusedInput] = useState(null);
+ 
+  const handleRegistration = () => {
+    console.log("Логін:", login);
+    console.log("Адреса електронної пошти:", email);
+    console.log("Пароль:", password);
+    setLogin("");
+    setEmail("");
+    setPassword("");
+  };
+  const handleInputFocus = (inputName) => {
+    setFocusedInput(inputName);
+  };
+
+  const handleInputBlur = () => {
+    setFocusedInput(null);
+  };
 
     return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1, justifyContent: "center" }}
       >
         <ImageBackground source={photoBG} style={styles.imageBG}>
           <View style={styles.containerForm}>
-            <Image style={styles.image} source={avatar}></Image>
-            <Icon style={styles.icon} name="pluscircleo" />
+            <ImageBackground style={styles.image} source={avatar} />
+              <Icon style={styles.icon} name="pluscircleo" />
             <Text style={styles.textHeader}>Реєстрація</Text>
-            <TextInput style={styles.input} placeholder="Логін"></TextInput>
             <TextInput
-              style={styles.input}
+            style={[styles.input, focusedInput === "login" && styles.focus]}
+            placeholder="Логін"
+            value={login}
+            onChangeText={setLogin}
+            onFocus={() => handleInputFocus("login")}
+            onBlur={handleInputBlur}
+            ></TextInput>
+            <TextInput
+              style={[styles.input, focusedInput === "email" && styles.focus]}
               placeholder="Адреса електронної пошти"
+              value={email}
+              onChangeText={setEmail}
+              onFocus={() => handleInputFocus("email")}
+              onBlur={handleInputBlur}
             ></TextInput>
             <View style={styles.containerInput}>
-            <TextInput
-              style={[styles.input, styles.lastChildInput]}
-              placeholder="Пароль"
-              secureTextEntry={!showPassword}
-            ></TextInput>
-            <Pressable onPress={togglePasswordVisibility}>
+              <TextInput
+                style={[
+                  styles.input,
+                  styles.lastChildInput,
+                  focusedInput === "password" && styles.focus,
+                ]}
+                placeholder="Пароль"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+                onFocus={() => handleInputFocus("password")}
+                onBlur={handleInputBlur}
+              ></TextInput>
+              <Pressable onPress={togglePasswordVisibility}>
               <Text style={styles.textInput}>
                 {showPassword ? "Сховати" : "Показати"}
-              </Text>
-            </Pressable>
-          </View>
-            <View style={styles.button}>
-              <Text style={styles.textButton}>Зареєструватися</Text>
+                </Text>
+              </Pressable>
             </View>
+            <Pressable onPress={handleRegistration}>
+              <View style={styles.button}>
+                <Text style={styles.textButton}>Зареєструватися</Text>
+              </View>
+            </Pressable>
             <Pressable>
               <Text style={styles.text}>Вже є акаунт? Увійти</Text>
             </Pressable>
           </View>
-        </ImageBackground>
+          </ImageBackground>
       </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
     );
   };
   
@@ -82,6 +128,7 @@ import {
       width: 120,
       height: 120,
       borderRadius: 16,
+      overflow: 'hidden',
       position: "absolute",
       top: -60,
       left: 135,
@@ -150,5 +197,9 @@ import {
       fontWeight: 400,
       color: "#1B4371",
       textAlign: "center",
+    },
+    focus: {
+      borderColor: "#FF6C00",
+      borderWidth: 1,
     },
   });

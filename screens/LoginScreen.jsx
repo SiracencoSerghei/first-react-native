@@ -9,49 +9,85 @@ import {
     Pressable,
     Button,
     KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+  Keyboard,
   } from "react-native";
   
   import photoBG from "../photo/photoBG.jpg";
   
   export const LoginScreen = () => {
+    const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [focusedInput, setFocusedInput] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  const handleRegistration = () => {
+    setEmail("");
+    console.log("Адреса електронної пошти:", email);
+    setPassword("");
+    console.log("Пароль:", password);
+  };
+
+  const handleInputFocus = (inputName) => {
+    setFocusedInput(inputName);
+  };
+
+  const handleInputBlur = () => {
+    setFocusedInput(null);
+  };
+
     return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1, justifyContent: "center" }}
       >
         <ImageBackground source={photoBG} style={styles.imageBG}>
-          <View style={styles.containerForm}>
-            <Text style={styles.textHeader}>Увійти</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Адреса електронної пошти"
-            ></TextInput>
-            <View style={styles.containerInput}>
-            <TextInput
-              style={[styles.input, styles.lastChildInput]}
-              placeholder="Пароль"
-              secureTextEntry={!showPassword}
-            ></TextInput>
-            <Pressable onPress={togglePasswordVisibility}>
-              <Text style={styles.textInput}>
-                {showPassword ? "Сховати" : "Показати"}
-              </Text>
-            </Pressable>
-          </View>
-            <View style={styles.button}>
-              <Text style={styles.textButton}>Увійти</Text>
-            </View>
-            <Pressable>
-              <Text style={styles.text}>Немає акаунту? Зареєструватися</Text>
-            </Pressable>
-          </View>
+        <View style={styles.containerForm}>
+  <Text style={styles.textHeader}>Увійти</Text>
+  <TextInput
+    style={[styles.input, focusedInput === "email" && styles.focus]}
+    placeholder="Адреса електронної пошти"
+    value={email}
+    onChangeText={setEmail}
+    onFocus={() => handleInputFocus("email")}
+    onBlur={handleInputBlur}
+  ></TextInput>
+  <View style={styles.containerInput}>
+    <TextInput
+      style={[
+        styles.input,
+        styles.lastChildInput,
+        focusedInput === "password" && styles.focus,
+      ]}
+      placeholder="Пароль"
+      secureTextEntry={!showPassword}
+      value={password}
+      onChangeText={setPassword}
+      onFocus={() => handleInputFocus("password")}
+      onBlur={handleInputBlur}
+    ></TextInput>
+    <Pressable onPress={togglePasswordVisibility}>
+      <Text style={styles.textInput}>
+        {showPassword ? "Сховати" : "Показати"}
+      </Text>
+    </Pressable>
+  </View>
+  <Pressable onPress={handleRegistration}>
+    <View style={styles.button}>
+      <Text style={styles.textButton}>Увійти</Text>
+    </View>
+  </Pressable>
+  <Pressable>
+    <Text style={styles.text}>Немає акаунту? Зареєструватися</Text>
+  </Pressable>
+</View>
         </ImageBackground>
       </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     );
   };
   
@@ -128,5 +164,9 @@ import {
       fontWeight: 400,
       color: "#1B4371",
       textAlign: "center",
+    },
+    focus: {
+      borderColor: "#FF6C00",
+      borderWidth: 1,
     },
   });
