@@ -7,7 +7,6 @@ import {
   Image,
   TextInput,
   Pressable,
-  Button,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
