@@ -1,17 +1,22 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
-import { RegistrationScreen } from "./screens/RegistrationScreen";
-import { LoginScreen } from './screens/LoginScreen';
-import { PostsScreen } from "./screens/PostsScreen";
+import "react-native-gesture-handler";
+import { StyleSheet } from "react-native";
+import { RegistrationScreen } from "./src/screens/RegistrationScreen";
+import { LoginScreen } from "./src/screens/LoginScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 export default function App() {
+  const MainStack = createStackNavigator();
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <RegistrationScreen />
-      {/* <LoginScreen /> */}
-      {/* <PostsScreen /> */}
-    </View>
+    <NavigationContainer>
+      <MainStack.Navigator
+        initialRouteName="Login"
+        screenOptions={{ headerShown: false }}
+      >
+        <MainStack.Screen name="Registration" component={RegistrationScreen} />
+        <MainStack.Screen name="Login" component={LoginScreen} />
+      </MainStack.Navigator>
+    </NavigationContainer>
   );
 }
 
