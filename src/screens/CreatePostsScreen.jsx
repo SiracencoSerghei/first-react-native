@@ -73,9 +73,9 @@ export const CreatePostsScreen = () => {
               </Pressable>
             </View>
           </View>
-          <Pressable style={styles.iconTrash}>
+          {/* <Pressable style={styles.iconTrash}>
             <IconTrash name="trash-2" size={24} style={{ color: "#BDBDBD" }} />
-          </Pressable>
+          </Pressable> */}
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
