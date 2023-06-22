@@ -73,9 +73,9 @@ export const CreatePostsScreen = () => {
               </Pressable>
             </View>
           </View>
-          {/* <Pressable style={styles.iconTrash}>
+          <Pressable style={styles.iconTrash}>
             <IconTrash name="trash-2" size={24} style={{ color: "#BDBDBD" }} />
-          </Pressable> */}
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -84,7 +84,7 @@ export const CreatePostsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    minHeight: 829,
+    minHeight: 849,
     paddingHorizontal: 20,
     paddingTop: 92,
     backgroundColor: "#fff",
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     width: 70,
     height: 40,
-    marginBottom: 34,
+    marginBottom: 84,
     borderRadius: 20,
     display: "flex",
     justifyContent: "center",
