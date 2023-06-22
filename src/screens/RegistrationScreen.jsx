@@ -38,7 +38,7 @@ export const RegistrationScreen = () => {
     setLogin("");
     setEmail("");
     setPassword("");
-    // navigation.navigate("Posts");
+    navigation.navigate("Home");
   };
   const handleInputFocus = (inputName) => {
     setFocusedInput(inputName);

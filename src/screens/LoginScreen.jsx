@@ -29,7 +29,7 @@ export const LoginScreen = () => {
     console.log("Адреса електронної пошти:", email);
     setPassword("");
     console.log("Пароль:", password);
-    // navigation.navigate("Home");
+    navigation.navigate("Home");
   };
 
   const handleInputFocus = (inputName) => {
