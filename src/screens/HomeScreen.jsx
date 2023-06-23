@@ -74,6 +74,7 @@ export const HomeScreen = () => {
       <Tabs.Screen
         name="Posts"
         component={PostsScreen}
+        initialParams={{ post: null }}
         options={{
           headerShown: false,
           tabBarShowLabel: false,

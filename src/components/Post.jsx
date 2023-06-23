@@ -1,92 +1,79 @@
-import { View, StyleSheet, Image, Text, Pressable } from "react-native";
-import IconLike from "react-native-vector-icons/AntDesign"; //like2
-import IconComment from "react-native-vector-icons/FontAwesome"; //comment
-import IconLocation from "react-native-vector-icons/Ionicons";
+import {
+  Button,
+  TextInput,
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Dimensions,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
-export const Post = () => {
+export function Post({ post }) {
+  const navigation = useNavigation();
+  const { geoLocation, location, name, photoUri } = post;
   return (
-    <View style={{ width: "100%", marginBottom: 32 }}>
-      <Image style={styles.image} />
-      <Text style={{ ...styles.text, marginTop: 8 }}>Текст поста</Text>
+    <View style={postStyles.container}>
+      <Image style={postStyles.image} source={{ uri: photoUri }} />
+      <Text style={{ ...postStyles.text, marginBottom: 11 }}>{name}</Text>
       <View
         style={{
+          display: "flex",
           flexDirection: "row",
-          alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              marginRight: 25,
-            }}
-          >
-            <IconComment
-              name="comment"
-              size={24}
-              style={{ color: "#FF6C00" }}
-            />
-            <Text style={styles.text}>0</Text>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <IconLike name="like2" size={24} style={{ color: "#FF6C00" }} />
-            <Text style={styles.text}>0</Text>
-          </View>
-        </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <IconLocation
-            name="location-outline"
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          <FontAwesome
+            name="comment-o"
             size={24}
-            style={{
-              color: "#BDBDBD",
-              opacity: 0.5,
-            }}
+            color="#BDBDBD"
+            onPress={() => navigation.navigate("Comments")}
           />
-          <Text style={{ ...styles.text, textDecorationLine: "underline" }}>
-            location
+          <Text style={{ ...postStyles.text, color: "#BDBDBD", marginLeft: 8 }}>
+            Num
           </Text>
+        </View>
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          <AntDesign
+            name="enviromento"
+            size={24}
+            color="#BDBDBD"
+            onPress={() =>
+              navigation.navigate("Map", { geoLocation, location, name })
+            }
+          />
+          <Text style={{ ...postStyles.text, marginLeft: 8 }}>{location}</Text>
         </View>
       </View>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
+}
+export const postStyles = StyleSheet.create({
+  container: {},
   image: {
     width: "100%",
     height: 240,
-    backgroundColor: "#BDBDBD",
+    backgroundColor: "#bdbdbd",
     borderRadius: 8,
     marginBottom: 8,
     marginTop: 32,
   },
   text: {
-    fontSize: 16,
+    fontFamily: "Roboto",
+    fontStyle: "normal",
     fontWeight: 500,
+    fontSize: 16,
     lineHeight: 19,
-    textAlign: "left",
     color: "#212121",
-    marginLeft: 8,
   },
 });

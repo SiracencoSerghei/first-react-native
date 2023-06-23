@@ -28,15 +28,20 @@ export const Header = (props) => {
           onPress={() => navigation.navigate("Login")}
         />
       );
-    } else if (
-      route.name === "CreatePosts" ||
-      route.name === "Comments" ||
-      route.name === "Map"
-    ) {
+    } else if (route.name === "CreatePosts" || route.name === "Map") {
       return (
         <IconBack
           name="arrow-back"
           style={styles.iconBack}
+          size={24}
+          onPress={handleBack}
+        />
+      );
+    } else if (route.name === "Comments") {
+      return (
+        <IconBack
+          name="arrow-back"
+          style={{ ...styles.iconBack, top: 40 }} // Изменение значения top только для страницы комментариев
           size={24}
           onPress={handleBack}
         />
@@ -80,15 +85,14 @@ const styles = StyleSheet.create({
     top: 42,
     color: "#BDBDBD",
   },
-  iconBack: {
+  iconBack: 
+  {
     position: "absolute",
     left: 20,
     top: 100,
     color: "#212121cc",
   },
 });
-
-
 
 // import { Text, View, StyleSheet } from "react-native";
 // import { useNavigation } from "@react-navigation/native";

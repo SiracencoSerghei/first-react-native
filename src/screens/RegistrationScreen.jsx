@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    height: 50,
+    height: "auto",
     backgroundColor: "#F6F6F6",
     borderRadius: 8,
     marginBottom: 16,

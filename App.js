@@ -29,6 +29,18 @@ export default function App() {
             headerShown: false,
           }}
         />
+         <MainStack.Screen
+          name="Comments"
+          component={CommentsScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Map"
+          component={MapScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
       </MainStack.Navigator>
     </NavigationContainer>
     </>
