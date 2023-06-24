@@ -16,7 +16,7 @@ import { useState } from "react";
   
   export const ProfileScreen = () => {
 
-    // const route = useRoute();
+  //   const route = useRoute();
   // const { post } = route.params;
 
     return (

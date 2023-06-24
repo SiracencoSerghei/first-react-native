@@ -15,7 +15,7 @@ import {
   Dimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import IconLocation from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
 export function Post({ post }) {
@@ -44,14 +44,14 @@ export function Post({ post }) {
           </Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <AntDesign
-            name="enviromento"
-            size={24}
-            color="#BDBDBD"
+        <IconLocation
+                    name="location-outline"
+                    size={24}
+                    color="#BDBDBD"
             onPress={() =>
               navigation.navigate("Map", { geoLocation, location, name })
             }
-          />
+                  />
           <Text style={{ ...postStyles.text, marginLeft: 8 }}>{location}</Text>
         </View>
       </View>
