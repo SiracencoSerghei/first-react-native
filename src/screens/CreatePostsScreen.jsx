@@ -11,7 +11,6 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  Linking,
 } from "react-native";
 import { Header } from "../components/Header";
 import IconCamera from "react-native-vector-icons/FontAwesome";
@@ -32,28 +31,49 @@ export const CreatePostsScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [cameraRef, setCameraRef] = useState(null);
-  const [uri, setUri] = useState(null);
+  const [uri, setUri] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [haveParam, setHaveParam] = useState(false);
+  const [camera, setCamera] = useState(null);
 
   const navigation = useNavigation();
 
-  const flipIconRef = useRef(null);
-
-
-  const requestLocationPermission = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+  const startCamera = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
     if (status === "granted") {
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setGeoLocation(coords);
-      return coords;
+      setCamera(true);
+    } else {
+    return
     }
   };
 
+  const stopCamera = () => {
+    setCamera(null);
+  };
+  
   useEffect(() => {
+    startCamera();
+  
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
+  // const flipIconRef = useRef(null);
+
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        let location = await Location.getCurrentPositionAsync({});
+        const coords = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setGeoLocation(coords);
+        return coords;
+      }
+    };
     requestLocationPermission();
   }, []);
 
@@ -85,17 +105,19 @@ export const CreatePostsScreen = () => {
     if (name.trim() === "" || location.trim() === "") {
       return;
     }
+    setHaveParam(false);
 
     const post = {
       name: name.trim(),
       location: location.trim(),
-      geoLocation,
-      uri,
+      geoLocation: geoLocation,
+      uri: uri,
     };
-    console.log("post", post);
+    console.log("post in CreatePosts", post);
     handleAddCamera();
     handleAddLocation();
-    resetForm();
+    setHaveParam(uri && !!name && !!location);
+    // resetForm();
     navigation.navigate("Home", {
       screen: "Posts",
       params: { post },
@@ -127,11 +149,12 @@ export const CreatePostsScreen = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1],
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled) {
       setSelectedImage(result.uri);
+      // setUri(result.uri);
     }
   };
   const handleCameraFlip = () => {
@@ -140,13 +163,13 @@ export const CreatePostsScreen = () => {
         ? Camera.Constants.Type.front
         : Camera.Constants.Type.back
     );
-    flipIconRef.current?.animate("flip");
+    // flipIconRef.current?.animate("flip");
   };
   // const handleOpenMaps = async () => {
   //   if (geoLocation) {
   //     const { latitude, longitude } = geoLocation;
   //     const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-      
+
   //     const canOpen = await Linking.canOpenURL(url);
   //     if (canOpen) {
   //       Linking.openURL(url);
@@ -159,6 +182,12 @@ export const CreatePostsScreen = () => {
   //     }
   //   }
   // };
+
+  useEffect(() => {
+    console.log("uri in CreatePosts", uri);
+    setHaveParam(uri && !!name && !!location);
+    console.log("haveParam in CreatePosts", haveParam);
+  }, [uri, name, location]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -204,7 +233,12 @@ export const CreatePostsScreen = () => {
                 </View>
               </ImageBackground>
             ) : (
-              <Camera style={styles.image} type={type} ref={setCameraRef}>
+              <Camera
+                style={styles.image}
+                type={type}
+                ref={setCameraRef}
+                ratio="1:1"
+              >
                 <View style={styles.captureButtonContainer}>
                   <TouchableOpacity
                     style={styles.captureButton}
@@ -220,7 +254,7 @@ export const CreatePostsScreen = () => {
                 <View style={styles.flipButtonContainer}>
                   <TouchableOpacity
                     style={styles.flipButton}
-                    onPress={handleCameraFlip}
+                    onPress={uri ? null : handleCameraFlip}
                   >
                     <IconFlipCamera
                       name="camera-flip-outline"
@@ -245,7 +279,7 @@ export const CreatePostsScreen = () => {
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Pressable
                 //  onPress={handleOpenMaps}
-                 >
+                >
                   <IconLocation
                     name="location-outline"
                     size={24}

@@ -8,7 +8,7 @@ export const PostsScreen = () => {
 
   const route = useRoute();
   const { post } = route.params;
-console.log('post', post)
+console.log('post in PostsScreen', post)
   return (
     <View style={styles.container}>
       <Header pageTitle="Публікації" style={styles.text} />
