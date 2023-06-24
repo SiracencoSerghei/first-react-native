@@ -1,64 +1,48 @@
-import {
-  Button,
-  TextInput,
-  View,
-  ScrollView,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Dimensions,
-} from "react-native";
+import React from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import IconLocation from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
 export function Post({ post }) {
   const navigation = useNavigation();
-  const { geoLocation, location, name, photoUri } = post;
+  const { geoLocation, location, name, uri } = post;
+
+  const handleCommentsPress = () => {
+    navigation.navigate("Comments", { uri });
+  };
+
   return (
-    <View style={postStyles.container}>
-      <Image style={postStyles.image} source={{ uri: photoUri }} />
-      <Text style={{ ...postStyles.text, marginBottom: 11 }}>{name}</Text>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <FontAwesome
-            name="comment-o"
-            size={24}
-            color="#BDBDBD"
-            onPress={() => navigation.navigate("Comments")}
-          />
-          <Text style={{ ...postStyles.text, color: "#BDBDBD", marginLeft: 8 }}>
+    <View style={styles.container}>
+      <Image style={styles.image} source={{ uri }} />
+      <Text style={{ ...styles.text, marginBottom: 11 }}>{name}</Text>
+      <View style={styles.infoContainer}>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={handleCommentsPress}
+        >
+          <FontAwesome name="comment-o" size={24} color="#BDBDBD" />
+          <Text style={{ ...styles.text, color: "#BDBDBD", marginLeft: 8 }}>
             Num
           </Text>
-        </View>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-        <IconLocation
-                    name="location-outline"
-                    size={24}
-                    color="#BDBDBD"
+        </TouchableOpacity>
+        <View style={styles.iconContainer}>
+          <IconLocation
+            name="location-outline"
+            size={24}
+            color="#BDBDBD"
             onPress={() =>
               navigation.navigate("Map", { geoLocation, location, name })
             }
-                  />
-          <Text style={{ ...postStyles.text, marginLeft: 8 }}>{location}</Text>
+          />
+          <Text style={{ ...styles.text, marginLeft: 8 }}>{location}</Text>
         </View>
       </View>
     </View>
   );
 }
-export const postStyles = StyleSheet.create({
+
+const styles = StyleSheet.create({
   container: {},
   image: {
     width: "100%",
@@ -75,5 +59,15 @@ export const postStyles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
+  },
+  infoContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  iconContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     position: "absolute",
-    bottom: 16,
+    bottom: 20,
     right: 16,
     color: "#1B4371",
     fontSize: 16,

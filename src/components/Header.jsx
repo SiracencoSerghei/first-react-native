@@ -9,12 +9,14 @@ export const Header = (props) => {
   const navigation = useNavigation();
 
   const handleBack = () => {
+    if (route.name === "CreatePosts") {
+      navigation.navigate("Posts");
+    }
     if (
-      route.name === "CreatePosts" ||
       route.name === "Comments" ||
       route.name === "Map"
     ) {
-      navigation.navigate("Posts");
+      navigation.goBack();
     }
   };
 

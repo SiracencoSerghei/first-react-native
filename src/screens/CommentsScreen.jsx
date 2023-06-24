@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   ImageBackground,
+  Image,
   Pressable,
   KeyboardAvoidingView,
   Keyboard,
@@ -13,20 +14,26 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { Comment } from "../components/Comment";
 import IconArrow from "react-native-vector-icons/AntDesign";
+import { useRoute } from "@react-navigation/native";
 
 export const CommentsScreen = () => {
+  const route = useRoute();
+  const { uri } = route.params;
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+
   const handleAddComment = () => {
     if (newComment.trim() === "") {
       return;
     }
     const comment = {
-      //   avatar: currentUser.avatar,
+      uri,
+        // avatar: currentUser.avatar,
       text: newComment,
       date: new Date().toLocaleDateString(),
     };
     setComments((prevComments) => [...prevComments, comment]);
+    console.log('comments', comments)
     setNewComment("");
     Keyboard.dismiss();
   };
@@ -44,7 +51,7 @@ export const CommentsScreen = () => {
               marginBottom: "auto",
             }}
           >
-            <ImageBackground style={styles.image}></ImageBackground>
+           <Image style={styles.image} source={{ uri }} />
             {comments.map((comment, index) => (
               <Comment
                 key={index}
@@ -81,7 +88,7 @@ export const CommentsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    minHeight: 700,
+    minHeight: 732,
     paddingHorizontal: 20,
     paddingTop: 32,
     paddingBottom: 20,
