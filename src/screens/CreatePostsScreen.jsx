@@ -18,7 +18,7 @@ import IconLocation from "react-native-vector-icons/Ionicons";
 import IconTrash from "react-native-vector-icons/Feather";
 import IconFlipCamera from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Location from "expo-location";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
@@ -35,6 +35,7 @@ export const CreatePostsScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [haveParam, setHaveParam] = useState(false);
   const [camera, setCamera] = useState(null);
+  const focused = useIsFocused()
 
   const navigation = useNavigation();
 
@@ -58,8 +59,6 @@ export const CreatePostsScreen = () => {
       stopCamera();
     };
   }, []);
-
-  // const flipIconRef = useRef(null);
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -232,38 +231,39 @@ export const CreatePostsScreen = () => {
                   />
                 </View>
               </ImageBackground>
-            ) : (
-              <Camera
-                style={styles.image}
-                type={type}
-                ref={setCameraRef}
-                ratio="1:1"
-              >
-                <View style={styles.captureButtonContainer}>
-                  <TouchableOpacity
-                    style={styles.captureButton}
-                    onPress={onPhoto}
-                  >
-                    <IconCamera
-                      name="camera"
-                      size={24}
-                      style={styles.cameraIcon}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.flipButtonContainer}>
-                  <TouchableOpacity
-                    style={styles.flipButton}
-                    onPress={uri ? null : handleCameraFlip}
-                  >
-                    <IconFlipCamera
-                      name="camera-flip-outline"
-                      size={24}
-                      style={styles.flipIcon}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </Camera>
+            ) : ( focused && (
+                <Camera
+                  style={styles.image}
+                  type={type}
+                  ref={setCameraRef}
+                  ratio="1:1"
+                >
+                  <View style={styles.captureButtonContainer}>
+                    <TouchableOpacity
+                      style={styles.captureButton}
+                      onPress={onPhoto}
+                    >
+                      <IconCamera
+                        name="camera"
+                        size={24}
+                        style={styles.cameraIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.flipButtonContainer}>
+                    <TouchableOpacity
+                      style={styles.flipButton}
+                      onPress={uri ? null : handleCameraFlip}
+                    >
+                      <IconFlipCamera
+                        name="camera-flip-outline"
+                        size={24}
+                        style={styles.flipIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </Camera>
+              )
             )}
             <Pressable onPress={handleSelectImage}>
               <Text style={styles.text}>Завантажте фото</Text>
