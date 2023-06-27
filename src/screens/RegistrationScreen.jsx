@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   ImageBackground,
@@ -10,22 +10,57 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  Button,
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import photoBG from "../photo/photoBG.jpg";
-import avatar from "../photo/avatar.jpg";
-import Icon from "react-native-vector-icons/AntDesign";
+// import avatar from "../photo/avatar.jpg";
+import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import { createUser } from "../redux/operations";
 
 export const RegistrationScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
-
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [avatarUri, setAvatarUri] = useState(null);
   const [focusedInput, setFocusedInput] = useState(null);
+  const [permission, setPermission] = useState(null);
+  const [getAvatar, setGetAvatar] = useState(false);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [haveParam, setHaveParam] = useState(false);
   const navigation = useNavigation();
+  const dispatch = useDispatch;
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+      setPermission(status === "granted");
+    })();
+  }, []);
+
+  useEffect(() => {
+    setHaveParam(login && email && password);
+  }, [login, email, password]);
+
+  if (permission === null) {
+    return <View />;
+  }
+
+  const onShot = async () => {
+    if (cameraRef) {
+      const { uri } = await cameraRef.takePictureAsync({
+        quality: 1,
+        base64: true,
+      });
+      setAvatarUri(uri);
+      setGetAvatar(false);
+    }
+  };
   
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -38,6 +73,14 @@ export const RegistrationScreen = () => {
     setLogin("");
     setEmail("");
     setPassword("");
+    const user = {
+      login,
+      email,
+      password,
+      avatarUri,
+    };
+    dispatch(createUser(user));
+    console.log('user in registration', user)
     navigation.navigate("Home");
   };
   const handleInputFocus = (inputName) => {
@@ -53,8 +96,47 @@ export const RegistrationScreen = () => {
       <ImageBackground source={photoBG} style={styles.imageBG}>
         <View style={styles.containerForm}>
           <View style={styles.avatarContainer}>
-            <ImageBackground style={styles.image} source={avatar} />
-            <Icon style={styles.icon} name="pluscircleo" />
+          {!getAvatar ? (
+              <Image source={{ uri: avatarUri }} style={styles.image} />
+            ) : (
+              <Camera
+                style={styles.image}
+                type={Camera.Constants.Type.front}
+                ref={setCameraRef}
+              />
+            )}
+            {!getAvatar && !avatarUri && (
+              <AntDesign
+                name="pluscircleo"
+                size={24}
+                color="#FF6C00"
+                style={styles.icon}
+                onPress={() => {
+                  setGetAvatar(true);
+                }}
+              />
+            )}
+            {avatarUri && (
+              <AntDesign
+                name="closecircleo"
+                size={24}
+                color="#BDBDBD"
+                style={styles.icon}
+                onPress={() => {
+                  setGetAvatar(false);
+                  setAvatarUri(null);
+                }}
+              />
+            )}
+            {getAvatar && !avatarUri && (
+              <MaterialIcons
+                name="photo-camera"
+                size={24}
+                color={"#FF6C00"}
+                style={styles.icon}
+                onPress={onShot}
+              />
+            )}
           </View>
           <Text style={styles.textHeader}>Реєстрація</Text>
 
@@ -100,7 +182,7 @@ export const RegistrationScreen = () => {
             </View>
           </KeyboardAvoidingView>
           <Pressable onPress={handleRegistration}>
-            <View style={styles.button}>
+            <View style={[styles.button, !haveParam && styles.disabledButton]}>
               <Text style={styles.textButton}>Зареєструватися</Text>
             </View>
           </Pressable>
@@ -218,5 +300,8 @@ const styles = StyleSheet.create({
   focus: {
     borderColor: "#FF6C00",
     borderWidth: 1,
+  },
+  disabledButton: {
+    backgroundColor: "gray",
   },
 });
