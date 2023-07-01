@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import IconTrash from "react-native-vector-icons/Feather";
 import IconFlipCamera from "react-native-vector-icons/MaterialCommunityIcons";
 import { useEffect, useState } from "react";
 import { Camera } from "expo-camera";
@@ -23,7 +24,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEmail } from "../redux/selectors";
 import { addPost } from "../redux/operations";
 import * as ImagePicker from "expo-image-picker";
-
 
 export default function CreatePostsScreen() {
   const [permission, setPermission] = useState(null);
@@ -221,8 +221,8 @@ export default function CreatePostsScreen() {
 
         <View style={{ marginTop: "auto" }}>
           <View style={innerStyles.trashButton}>
-            <AntDesign
-              name="delete"
+            <IconTrash
+              name="trash-2"
               size={24}
               color={!photoUri ? "#bdbdbd" : "black"}
               onPress={onDelPress}
@@ -237,7 +237,7 @@ export default function CreatePostsScreen() {
 const innerStyles = StyleSheet.create({
   trashButton: {
     backgroundColor: "#F6F6F6",
-    marginTop: "auto",
+    marginTop: 100,
     width: 70,
     height: 40,
     borderRadius: 20,
@@ -257,7 +257,7 @@ const innerStyles = StyleSheet.create({
   smallButton: {
     position: "absolute",
     bottom: 10,
-    right: 10,
+    right: 0,
     height: 40,
     width: 70,
     display: "flex",
