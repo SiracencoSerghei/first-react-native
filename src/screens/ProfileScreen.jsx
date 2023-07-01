@@ -37,7 +37,7 @@ export default function ProfileScreen() {
         />
         <Text style={styles.text}>{login}</Text>
         {posts && (
-          <ScrollView style={{ paddingHorizontal: 16 }}>
+          <ScrollView style={{ paddingHorizontal: 16, marginBottom: 16 }}>
             {posts.map((el) => (
               <Post key={el.creationTime} data={el}></Post>
             ))}
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 60,
-    paddingBottom: 30,
+    paddingBottom: 35,
     minHeight: Dimensions.get("window").height - 120,
     backgroundColor: "white",
     opacity: 1,
