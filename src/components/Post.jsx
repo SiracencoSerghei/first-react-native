@@ -24,7 +24,7 @@ export default function Post({ data }) {
   } = data;
 
   const delPostFunc = () => {
-    console.log('creationTime in Post', creationTime)
+    // console.log('creationTime in Post', creationTime)
     dispatch(delPost(creationTime));
   };
 

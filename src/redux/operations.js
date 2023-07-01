@@ -78,32 +78,6 @@ export const logOutUser = createAsyncThunk(
   }
 );
 
-// export const addPost = createAsyncThunk(
-//   "posts/addPost",
-//   async ({ photoUri, ...restData }, thunkAPI) => {
-//     try {
-//       const { creationTime } = await MediaLibrary.createAssetAsync(photoUri);
-//       const datas = await MediaLibrary.createAssetAsync(photoUri);
-//       console.log('datas', datas)
-//       console.log('photoUri', photoUri)
-//       console.log('creationTime in operations', creationTime)
-//       const response = await fetch(photoUri);
-//       const file = await response.blob();
-//       const url = await setStorage({ folder: "posts", creationTime, file });
-//       const post = {
-//         ...restData,
-//         url,
-//         creationTime,
-//       };
-//       await setPost(post);
-//       return post;
-//     } catch (error) {
-//       console.log(error.message);
-//       return thunkAPI.rejectWithValue(error.message);
-//     }
-//   }
-// );
-
 export const addPost = createAsyncThunk(
   "posts/addPost",
   async ({ photoUri, ...restData }, thunkAPI) => {
@@ -111,9 +85,9 @@ export const addPost = createAsyncThunk(
       const creationTime = Date.now(); // Отримуємо поточний час
       const { albumId } = await MediaLibrary.createAssetAsync(photoUri);
       const datas = await MediaLibrary.getAssetInfoAsync(albumId);
-      console.log('datas', datas)
-      console.log('photoUri', photoUri)
-      console.log('creationTime in operations', creationTime)
+      // console.log('datas', datas)
+      // console.log('photoUri', photoUri)
+      // console.log('creationTime in operations', creationTime)
       const response = await fetch(photoUri);
       const file = await response.blob();
       const url = await setStorage({ folder: "posts", creationTime, file });
