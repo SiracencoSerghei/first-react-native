@@ -68,9 +68,12 @@ export const loginUser = createAsyncThunk(
 export const logOutUser = createAsyncThunk(
   "user/logOutUser",
   async (data, thunkAPI) => {
+    // const state = thunkAPI.getState();
     try {
       await signOut(auth);
       await AsyncStorage.clear();
+      // console.log('state', state)
+      thunkAPI.dispatch(logout());
       return "logout";
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -83,8 +86,8 @@ export const addPost = createAsyncThunk(
   async ({ photoUri, ...restData }, thunkAPI) => {
     try {
       const creationTime = Date.now(); // Отримуємо поточний час
-      const { albumId } = await MediaLibrary.createAssetAsync(photoUri);
-      const datas = await MediaLibrary.getAssetInfoAsync(albumId);
+      // const { albumId } = await MediaLibrary.createAssetAsync(photoUri);
+      // const datas = await MediaLibrary.getAssetInfoAsync(albumId);
       // console.log('datas', datas)
       // console.log('photoUri', photoUri)
       // console.log('creationTime in operations', creationTime)

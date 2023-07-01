@@ -56,6 +56,13 @@ export const postsSlice = createSlice({
         post.likes
           ? post.likes.push(action.payload.mail)
           : (post.likes = [action.payload.mail]);
+      })
+      .addCase(updateUserData, (state, action) => {
+        state.email = "";
+        state.login = "";
+        state.photo = null;
+        state.uid = null;
+        state.isLogin = false;
       });
   },
 });
