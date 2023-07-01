@@ -15,14 +15,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos.",
+        "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos"
+      }
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "package": "com.siracencoserghei.firstreactnative"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,9 +41,13 @@
         "expo-media-library",
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos."
-          
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "12b8d279-e530-4374-8d3c-5bbbb9eaa6ca"
+      }
+    }
   }
 }
