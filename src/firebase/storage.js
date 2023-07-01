@@ -3,9 +3,11 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 // const storage = getStorage();
 
-export const setAvatarStorage = async ({ avatar, uid }) => {
-  const userAvatarRef = ref(storage, `avatar/${uid}.jpg`);
-  const snapshot = await uploadBytes(userAvatarRef, avatar);
+export const setStorage = async ({ folder, creationTime, file }) => {
+  const snapshot = await uploadBytes(
+    ref(storage, `${folder}/${creationTime}.jpg`),
+    file
+  );
   const url = await getDownloadURL(snapshot.ref);
   return url;
 };

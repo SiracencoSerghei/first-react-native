@@ -6,7 +6,8 @@ import { getAuth, initializeAuth, getReactNativePersistence, signOut } from "fir
 import { getFirestore } from "firebase/firestore";
 // Функція для підключення сховища файлів в проект
 import { getStorage } from "firebase/storage";
-
+import { getDatabase } from "firebase/database";
+import { decode } from "base-64";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getAnalytics } from "firebase/analytics";
@@ -15,16 +16,17 @@ import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+if (typeof atob === "undefined") {
+  global.atob = decode;
+}
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCKDIrv6zHPUsxw2oCBIedkYA0HIzq8Kaw",
-  authDomain: "first-react-native-da1b0.firebaseapp.com",
-  databaseURL: "https://first-react-native-da1b0-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "first-react-native-da1b0",
-  storageBucket: "first-react-native-da1b0.appspot.com",
-  messagingSenderId: "752846044176",
-  appId: "1:752846044176:web:175d93e95f04fe5b165e95",
-  measurementId: "G-K9107QRKCF"
+  apiKey: "AIzaSyBWbEfDxp7NyjZ9O0Nqr0WEcpVmSSq2_4A",
+  authDomain: "react-native-first-65935.firebaseapp.com",
+  projectId: "react-native-first-65935",
+  storageBucket: "react-native-first-65935.appspot.com",
+  messagingSenderId: "798326149906",
+  appId: "1:798326149906:web:a700e4f6f4afd2695ad9cb"
 };
 
 // Initialize Firebase
@@ -34,5 +36,6 @@ export const analytics = getAnalytics(app);
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
-export const db = getFirestore(app);
+export const fireStore = getFirestore(app);
 export const storage = getStorage(app);
+export const database = getDatabase(app);

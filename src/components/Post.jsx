@@ -1,56 +1,123 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import IconLocation from "react-native-vector-icons/Ionicons";
+import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { getEmail, getUser } from "../redux/selectors";
+import { addLike, delPost } from "../redux/operations";
 
-export function Post({ post }) {
+export default function Post({ data }) {
   const navigation = useNavigation();
-  const { geoLocation, location, name, uri } = post;
+  const accEmail = useSelector(getEmail);
+  // const { email } = useSelector(getUser);
+  const dispatch = useDispatch();
 
-  const handleCommentsPress = () => {
-    navigation.navigate("Comments", { uri });
+  const {
+    geoLocation,
+    location,
+    name,
+    url,
+    email,
+    creationTime,
+    comments,
+    likes,
+  } = data;
+
+  const delPostFunc = () => {
+    console.log('creationTime in Post', creationTime)
+    dispatch(delPost(creationTime));
+  };
+
+  const addLikeFunc = () => {
+    if (likes?.includes(accEmail)) return;
+    dispatch(addLike({ mail: accEmail, id: creationTime }));
   };
 
   return (
-    <View style={styles.container}>
-      <Image style={styles.image} source={{ uri }} />
-      <Text style={{ ...styles.text, marginBottom: 11 }}>{name}</Text>
-      <View style={styles.infoContainer}>
-        <TouchableOpacity
-          style={styles.iconContainer}
-          onPress={handleCommentsPress}
-        >
-          <FontAwesome name="comment-o" size={24} color="#BDBDBD" />
-          <Text style={{ ...styles.text, color: "#BDBDBD", marginLeft: 8 }}>
-            Num
+    <View style={postStyles.container}>
+      <Image style={postStyles.image} source={{ uri: url }} />
+      {accEmail === email && (
+        <View style={postStyles.bottomNavigation}>
+          <AntDesign
+            name="delete"
+            size={24}
+            color={"#bdbdbd"}
+            onPress={delPostFunc}
+          />
+        </View>
+      )}
+      <Text style={{ ...postStyles.text, marginBottom: 11 }}>{name}</Text>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View style={postStyles.viewStyle}>
+          <FontAwesome
+            name="comment"
+            size={24}
+            color={comments?.length ? "#FF6C00" : "#BDBDBD"}
+            onPress={() =>
+              navigation.navigate("Comments", { creationTime, url })
+            }
+          />
+          <Text
+            style={
+              // comments?.length
+              //   ? { ...postStyles.text, marginLeft: 8 }
+              //   : { ...postStyles.text, color: "#BDBDBD", marginLeft: 8 }
+              comments?.length > 0 ? { ...postStyles.text, marginLeft: 8 } : { ...postStyles.text, marginLeft: 8 }
+            }
+          >
+            {comments?.length}
           </Text>
-        </TouchableOpacity>
-        <View style={styles.iconContainer}>
-          <IconLocation
-            name="location-outline"
+          <AntDesign
+            name="like2"
+            size={24}
+            style={{ marginLeft: 10 }}
+            color={likes?.length ? "#FF6C00" : "#BDBDBD"}
+            onPress={addLikeFunc}
+          />
+          <Text
+            style={
+              likes?.length
+                ? { ...postStyles.text, marginLeft: 8 }
+                : { ...postStyles.text, color: "#BDBDBD", marginLeft: 8 }
+            }
+          >
+            {likes?.length ?? 0}
+          </Text>
+        </View>
+        <View style={postStyles.viewStyle}>
+          <AntDesign
+            name="enviromento"
             size={24}
             color="#BDBDBD"
             onPress={() =>
               navigation.navigate("Map", { geoLocation, location, name })
             }
           />
-          <Text style={{ ...styles.text, marginLeft: 8 }}>{location}</Text>
+          <Text style={{ ...postStyles.text, marginLeft: 8 }}>{location}</Text>
         </View>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {},
+export const postStyles = StyleSheet.create({
+  container: {
+    position: "relative",
+    marginBottom: 15,
+  },
   image: {
     width: "100%",
     height: 240,
     backgroundColor: "#bdbdbd",
     borderRadius: 8,
     marginBottom: 8,
-    marginTop: 32,
+    marginTop: 0,
   },
   text: {
     fontFamily: "Roboto",
@@ -60,14 +127,23 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: "#212121",
   },
-  infoContainer: {
+  bottomNavigation: {
+    height: 40,
+    width: 70,
+    borderRadius: 20,
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    alignSelf: "center",
+    position: "absolute",
+    top: 5,
+    left: 5,
   },
-  iconContainer: {
+  viewStyle: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
   },
 });

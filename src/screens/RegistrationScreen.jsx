@@ -1,39 +1,42 @@
-import React, { useEffect, useState } from "react";
 import {
-  View,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  Image,
   TextInput,
-  Pressable,
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Image,
+  TouchableOpacity,
   KeyboardAvoidingView,
+  Platform,
   TouchableWithoutFeedback,
   Keyboard,
   Dimensions,
+  Pressable,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import { photoBG} from '../photo/photoBG.jpg'
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import photoBG from "../photo/photoBG.jpg";
-// import avatar from "../photo/avatar.jpg";
-import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
+import { createUser } from "../redux/operations";
+import { useEffect } from "react";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { createUser } from "../redux/operations";
+import { MaterialIcons } from "@expo/vector-icons";
 
-export const RegistrationScreen = () => {
-  const [showPassword, setShowPassword] = useState(false);
+export default function RegistrationScreen() {
+  const [passwordVisible, setPasswordVisible] = useState(true);
+  const [photoUri, setPhotoUri] = useState(null);
+  const [focused, setFocused] = useState(null);
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [avatarUri, setAvatarUri] = useState(null);
-  const [focusedInput, setFocusedInput] = useState(null);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [permission, setPermission] = useState(null);
   const [getAvatar, setGetAvatar] = useState(false);
   const [cameraRef, setCameraRef] = useState(null);
   const [haveParam, setHaveParam] = useState(false);
-  const navigation = useNavigation();
-  const dispatch = useDispatch;
 
   useEffect(() => {
     (async () => {
@@ -51,53 +54,38 @@ export const RegistrationScreen = () => {
     return <View />;
   }
 
+  const setFocus = (e) => setFocused(e._dispatchInstances.memoizedProps.name);
+
+  const setBlur = () => setFocused(null);
+
+  const onPress = () => {
+    const user = {
+      login,
+      email,
+      password,
+      photoUri,
+    };
+    dispatch(createUser(user));
+  };
+
   const onShot = async () => {
     if (cameraRef) {
       const { uri } = await cameraRef.takePictureAsync({
         quality: 1,
         base64: true,
       });
-      setAvatarUri(uri);
+      setPhotoUri(uri);
       setGetAvatar(false);
     }
   };
-  
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleRegistration = () => {
-    console.log("Логін:", login);
-    console.log("Адреса електронної пошти:", email);
-    console.log("Пароль:", password);
-    setLogin("");
-    setEmail("");
-    setPassword("");
-    const user = {
-      login,
-      email,
-      password,
-      avatarUri,
-    };
-    dispatch(createUser(user));
-    console.log('user in registration', user)
-    navigation.navigate("Home");
-  };
-  const handleInputFocus = (inputName) => {
-    setFocusedInput(inputName);
-  };
-
-  const handleInputBlur = () => {
-    setFocusedInput(null);
-  };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground source={photoBG} style={styles.imageBG}>
-        <View style={styles.containerForm}>
+    <ImageBackground source={photoBG} style={styles.imageBG}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
           <View style={styles.avatarContainer}>
-          {!getAvatar ? (
-              <Image source={{ uri: avatarUri }} style={styles.image} />
+            {!getAvatar ? (
+              <Image source={{ uri: photoUri }} style={styles.image} />
             ) : (
               <Camera
                 style={styles.image}
@@ -105,7 +93,7 @@ export const RegistrationScreen = () => {
                 ref={setCameraRef}
               />
             )}
-            {!getAvatar && !avatarUri && (
+            {!getAvatar && !photoUri && (
               <AntDesign
                 name="pluscircleo"
                 size={24}
@@ -116,7 +104,7 @@ export const RegistrationScreen = () => {
                 }}
               />
             )}
-            {avatarUri && (
+            {photoUri && (
               <AntDesign
                 name="closecircleo"
                 size={24}
@@ -124,11 +112,11 @@ export const RegistrationScreen = () => {
                 style={styles.icon}
                 onPress={() => {
                   setGetAvatar(false);
-                  setAvatarUri(null);
+                  setPhotoUri(null);
                 }}
               />
             )}
-            {getAvatar && !avatarUri && (
+            {getAvatar && !photoUri && (
               <MaterialIcons
                 name="photo-camera"
                 size={24}
@@ -138,170 +126,220 @@ export const RegistrationScreen = () => {
               />
             )}
           </View>
-          <Text style={styles.textHeader}>Реєстрація</Text>
-
+          <Text style={styles.header}>Реєстрація</Text>
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1, justifyContent: "center" }}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
           >
             <TextInput
-              style={[styles.input, focusedInput === "login" && styles.focus]}
+              style={
+                focused === "login"
+                  ? { ...styles.input, ...styles.focus }
+                  : { ...styles.input }
+              }
               placeholder="Логін"
+              name="login"
+              placeholderTextColor={"#BDBDBD"}
+              textContentType="username"
               value={login}
               onChangeText={setLogin}
-              onFocus={() => handleInputFocus("login")}
-              onBlur={handleInputBlur}
-            ></TextInput>
+              onFocus={setFocus}
+              onBlur={setBlur}
+            />
             <TextInput
-              style={[styles.input, focusedInput === "email" && styles.focus]}
+              style={
+                focused === "email"
+                  ? { ...styles.input, ...styles.focus }
+                  : { ...styles.input }
+              }
               placeholder="Адреса електронної пошти"
+              name="email"
+              placeholderTextColor={"#BDBDBD"}
+              textContentType="emailAddress"
+              autoComplete="email"
+              inputMode="email"
               value={email}
               onChangeText={setEmail}
-              onFocus={() => handleInputFocus("email")}
-              onBlur={handleInputBlur}
-            ></TextInput>
-            <View style={styles.containerInput}>
+              onFocus={setFocus}
+              onBlur={setBlur}
+            />
+            <View style={{ position: "relative" }}>
               <TextInput
-                style={[
-                  styles.input,
-                  styles.lastChildInput,
-                  focusedInput === "password" && styles.focus,
-                ]}
+                style={
+                  focused === "password"
+                    ? { ...styles.input, ...styles.focus }
+                    : { ...styles.input }
+                }
                 placeholder="Пароль"
-                secureTextEntry={!showPassword}
+                name="password"
+                placeholderTextColor={"#BDBDBD"}
+                textContentType="password"
+                secureTextEntry={passwordVisible}
                 value={password}
                 onChangeText={setPassword}
-                onFocus={() => handleInputFocus("password")}
-                onBlur={handleInputBlur}
-              ></TextInput>
-              <Pressable onPress={togglePasswordVisibility}>
+                onFocus={setFocus}
+                onBlur={setBlur}
+              />
+              <Pressable onPress={() => setPasswordVisible((prev) => !prev)}>
                 <Text style={styles.textInput}>
-                  {showPassword ? "Сховати" : "Показати"}
+                  {!passwordVisible ? "Сховати" : "Показати"}
                 </Text>
               </Pressable>
             </View>
           </KeyboardAvoidingView>
-          <Pressable onPress={handleRegistration}>
-            <View style={[styles.button, !haveParam && styles.disabledButton]}>
-              <Text style={styles.textButton}>Зареєструватися</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.text}>Вже є акаунт? Увійти</Text>
-          </Pressable>
+          <TouchableOpacity
+            style={
+              haveParam
+                ? styles.button
+                : { ...styles.button, backgroundColor: "#bdbdbd" }
+            }
+            onPress={onPress}
+          >
+            <Text style={styles.buttonText}>Зареєструватися</Text>
+          </TouchableOpacity>
+          <View style={styles.bottomText}>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.text}>Вже є акаунт? Увійти</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ImageBackground>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </ImageBackground>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  imageBG: {
-    flex: 1,
-    justifyContent: "flex-end",
-    width: null,
-    height: null,
+export const styles = StyleSheet.create({
+  focus: {
+    backgroundColor: "#Ffffff",
+    borderColor: "#FF6C00",
+  },
+  container: {
+    position: "relative",
+    marginTop: "auto",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingHorizontal: 16,
+    paddingTop: 85,
+    paddingBottom: 10,
+    backgroundColor: "white",
+    opacity: 1,
   },
   avatarContainer: {
     position: "absolute",
     left: Dimensions.get("window").width / 2,
     transform: [{ translateX: -60 }],
   },
-  containerForm: {
-    backgroundColor: "#fff",
-    width: "100%",
-    height: 549,
-    marginTop: "auto",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    position: "relative",
-    textAlign: "center",
-    padding: 20,
-  },
-
   image: {
-    overflow: "hidden",
+    height: 120,
+    width: 120,
+    backgroundColor: "#F6F6F6",
     position: "absolute",
     top: -60,
-    bottom: 0,
     left: 0,
-    right: 0,
-    // margin: "auto",
-    width: 120,
-    height: 120,
     borderRadius: 16,
-    backgroundColor: "#F6F6F6",
   },
   icon: {
     position: "absolute",
     left: 120 - 12,
     bottom: -40,
     zIndex: 100,
-    color: "#FF6C00",
-    fontSize: 25,
   },
-  textHeader: {
-    fontWeight: 500,
-    fontSize: 30,
-    lineHeight: 35.16,
-    color: "#212121",
-    marginTop: 92,
-    textAlign: "center",
-    marginBottom: 32,
+  imageBG: {
+    flex: 1,
+    width: null,
+    height: null,
   },
   input: {
-    width: "100%",
-    height: "auto",
+    height: 50,
+    width: null,
     backgroundColor: "#F6F6F6",
-    borderRadius: 8,
-    marginBottom: 16,
-    padding: 16,
-    borderColor: "#E8E8E8",
     borderWidth: 1,
+    borderStyle: "solid",
+    borderRadius: 8,
+    borderColor: "#E8E8E8",
+    marginBottom: 16,
+    padding: 15,
+    fontFamily: "Roboto",
+    fontStyle: "normal",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#BDBDBD",
   },
-  lastChildInput: {
-    marginBottom: 0,
+  header: {
+    height: 35,
+    fontFamily: "Roboto",
+    fontStyle: "normal",
+    fontWeight: 500,
+    fontSize: 30,
+    lineHeight: 35,
+    textAlign: "center",
+    color: "#212121",
+    marginBottom: 33,
   },
-  containerInput: {
-    position: "relative",
+  button: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 100,
+    height: 50,
+    width: null,
+    backgroundColor: "#FF6C00",
+    marginTop: 27,
+  },
+  buttonText: {
+    fontFamily: "Roboto",
+    fontStyle: "normal",
+    fontWeight: 400,
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#FFFFFF",
+  },
+  text: {
+    fontFamily: "Roboto",
+    fontStyle: "normal",
+    fontWeight: 400,
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "center",
+    color: "#1B4371",
+    marginTop: 16,
   },
   textInput: {
     position: "absolute",
-    bottom: 20,
+    bottom: 30,
     right: 16,
     color: "#1B4371",
     fontSize: 16,
     lineHeight: 18.75,
     fontWeight: 400,
   },
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
-    marginTop: 43,
-    marginBottom: 16,
-    padding: 16,
+  bottomText: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  textButton: {
-    fontSize: 16,
-    lineHeight: 18.75,
-    fontWeight: 400,
-    color: "#fff",
+  bottomNavigation: {
+    height: 40,
+    width: 70,
+    borderRadius: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  customHeader: {
+    position: "relative",
+    paddingVertical: 11,
+    borderBottomWidth: 1,
+    borderColor: "#BDBDBD",
+    marginTop: 35,
+  },
+  customHeaderText: {
+    fontFamily: "Roboto",
+    fontStyle: "normal",
+    fontWeight: 500,
+    fontSize: 17,
+    lineHeight: 22,
     textAlign: "center",
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 18.75,
-    fontWeight: 400,
-    color: "#1B4371",
-    textAlign: "center",
-  },
-  focus: {
-    borderColor: "#FF6C00",
-    borderWidth: 1,
-  },
-  disabledButton: {
-    backgroundColor: "gray",
+    letterSpacing: -0.408,
+    color: "#212121",
   },
 });

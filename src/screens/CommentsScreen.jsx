@@ -1,130 +1,110 @@
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  ImageBackground,
-  Image,
-  Pressable,
-  KeyboardAvoidingView,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { TextInput, View, ScrollView, StyleSheet, Image } from "react-native";
 import { useState } from "react";
-import { Header } from "../components/Header";
-import { Comment } from "../components/Comment";
-import IconArrow from "react-native-vector-icons/AntDesign";
-import { useRoute } from "@react-navigation/native";
+import Comment from "../components/Comment";
+import { AntDesign } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { getPost, getUser } from "../redux/selectors";
+import { addComment } from "../redux/operations";
 
-export const CommentsScreen = () => {
-  const route = useRoute();
-  const { uri } = route.params;
-  const [comments, setComments] = useState([]);
+export default function CommentsScreen({ route }) {
+  const id = route.params.creationTime;
+  const url = route.params.url;
+  const { photoUri } = useSelector(getUser);
+  const comments = useSelector(getPost(id));
   const [newComment, setNewComment] = useState("");
 
-  const handleAddComment = () => {
-    if (newComment.trim() === "") {
-      return;
-    }
-    const comment = {
-      uri,
-        // avatar: currentUser.avatar,
+  const dispatch = useDispatch();
+
+  const setComment = () => {
+    if (!newComment) return;
+    const date = new Date();
+    const data = {
+      id,
       text: newComment,
-      date: new Date().toLocaleDateString(),
+      avatar: photoUri,
+      date: date.getTime(),
     };
-    setComments((prevComments) => [...prevComments, comment]);
-    console.log('comments', comments)
+    dispatch(addComment(data));
     setNewComment("");
-    Keyboard.dismiss();
   };
+
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, justifyContent: "center" }}
-      >
-        <View style={styles.container}>
-          <Header pageTitle="Коментарі" />
-          <View
-            style={{
-              marginTop: 32,
-              marginBottom: "auto",
-            }}
-          >
-           <Image style={styles.image} source={{ uri }} />
-            {comments.map((comment, index) => (
-              <Comment
-                key={index}
-                text={comment.text}
-                date={comment.date}
-              />
-            ))}
-          </View>
-          <View style={styles.input}>
-            <TextInput
-              placeholder="Коментувати..."
-              placeholderTextColor="#BDBDBD"
-              value={newComment}
-              onChangeText={setNewComment}
-              //   onSubmitEditing={handleAddComment}
+    <>
+      <View style={commentStyles.container}>
+        <ScrollView>
+          <Image style={commentStyles.image} source={{ uri: url }} />
+          {comments?.map((el, index) => (
+            <Comment key={el.date} index={index} comment={el}></Comment>
+          ))}
+        </ScrollView>
+        <View
+          style={{
+            position: "relative",
+            marginTop: "auto",
+            paddingVertical: 16,
+          }}
+        >
+          <TextInput
+            style={commentStyles.input}
+            placeholder="Comment..."
+            name="comment"
+            placeholderTextColor={"#BDBDBD"}
+            textContentType="username"
+            value={newComment}
+            onChangeText={setNewComment}
+          />
+          <View style={commentStyles.icon}>
+            <AntDesign
+              name="arrowup"
+              size={24}
+              color="white"
+              onPress={setComment}
             />
-            <Pressable onPress={handleAddComment}>
-              <View style={styles.icon}>
-                <IconArrow
-                  name="arrowup"
-                  size={14}
-                  style={{
-                    color: "#fff",
-                  }}
-                />
-              </View>
-            </Pressable>
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+      </View>
+    </>
   );
-};
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    minHeight: 732,
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    paddingBottom: 20,
-    backgroundColor: "#fff",
-    marginTop: "auto",
+}
+
+const commentStyles = StyleSheet.create({
+  input: {
+    fontFamily: "Roboto",
+    fontStyle: "normal",
+    fontSize: 16,
+    lineHeight: 19,
+    height: 50,
+    backgroundColor: "#F6F6F6",
+    borderColor: "#E8E8E8",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 25,
+    paddingLeft: 16,
   },
   image: {
     width: "100%",
     height: 240,
     backgroundColor: "#bdbdbd",
     borderRadius: 8,
-    marginBottom: 32,
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 100,
-    fontSize: 16,
-    fontWeight: 400,
-    lineHeight: 19,
-    textAlign: "left",
-    padding: 16,
-    marginTop: 32,
-    position: "relative",
+    marginBottom: 8,
   },
   icon: {
-    position: "absolute",
-    bottom: -8,
-    right: 0,
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
     width: 34,
     height: 34,
+    backgroundColor: "#FF6C00",
+    borderRadius: 16,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    position: "absolute",
+    right: 8,
+    top: 24,
+  },
+  container: {
+    paddingHorizontal: 16,
+    paddingTop: 2,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
 });

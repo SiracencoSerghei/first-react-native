@@ -1,60 +1,91 @@
-import { View, StyleSheet, Text, Image, Pressable, Button } from "react-native";
-import { Header } from "../components/Header";
-import avatar from "../photo/avatar.jpg";
-import { Post } from "../components/Post";
-import { useRoute } from "@react-navigation/native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  ImageBackground,
+} from "react-native";
+import Post from "../components/Post";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getPosts, getUser } from "../redux/selectors";
+import { getAllPosts } from "../redux/operations";
 
-export const PostsScreen = () => {
+export default function PostsScreen() {
+  const dispatch = useDispatch();
+  const posts = useSelector(getPosts);
+  const { email, login, photoUri } = useSelector(getUser);
 
-  const route = useRoute();
-  const { post } = route.params;
-console.log('post in PostsScreen', post)
+  useEffect(() => {
+    dispatch(getAllPosts());
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Header pageTitle="Публікації" style={styles.text} />
-      <View style={{ marginTop: 32 }}>
-        <View style={styles.userContainer}>
-          <Image source={avatar} style={styles.image} />
-          <View>
-            <Text style={styles.userName}>Natali Romanova</Text>
-            <Text>email@example.com</Text>
+    <>
+      {!posts ? (
+        <View style={postStyles.container}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <View>
+              <ImageBackground
+                source={{ uri: photoUri }}
+                style={postStyles.image}
+              />
+            </View>
+            <View>
+              <Text style={postStyles.name}>{login}</Text>
+              <Text style={postStyles.email}>{email}</Text>
+            </View>
           </View>
         </View>
-        {post && <Post post={post} />}
-      </View>
-    </View>
+      ) : (
+        <ScrollView style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+          {posts.map((el) => (
+            <Post key={el.creationTime} data={el}></Post>
+          ))}
+        </ScrollView>
+      )}
+    </>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: 720,
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    backgroundColor: "#fff",
-  },
+const postStyles = StyleSheet.create({
   image: {
-    width: 60,
     height: 60,
+    width: 60,
+    backgroundColor: "#BDBDBD",
     borderRadius: 16,
-    marginRight: 10,
+    marginRight: 8,
+    // marginLeft: 16,
+    // marginTop:32,
   },
-  userContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginBottom: 16,
+  container: {
+    paddingTop: 32,
+    paddingHorizontal: 16,
   },
-  userName: {
-    fontSize: 13,
+  name: {
+    fontFamily: "Roboto",
+    fontStyle: "normal",
     fontWeight: 700,
-    lineHeight: 15.23,
+    fontSize: 13,
+    lineHeight: 15,
+    // display: flex,
+    // alignItems: center,
+    color: "#212121",
   },
-  userEmail: {
-    fontSize: 11,
+  email: {
+    fontFamily: "Roboto",
+    fontStyle: "normal",
     fontWeight: 400,
-    lineHeight: 12.89,
-    color: "#3C3C3C",
+    fontSize: 11,
+    lineHeight: 13,
+    // display: flex,
+    // alignItems: center,
+    color: "#333333",
   },
 });
