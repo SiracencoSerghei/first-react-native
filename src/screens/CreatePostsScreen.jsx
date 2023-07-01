@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   TouchableWithoutFeedback,
+  Pressable,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -21,6 +22,8 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { getEmail } from "../redux/selectors";
 import { addPost } from "../redux/operations";
+import * as ImagePicker from "expo-image-picker";
+
 
 export default function CreatePostsScreen() {
   const [permission, setPermission] = useState(null);
@@ -99,6 +102,23 @@ export default function CreatePostsScreen() {
       setPhotoUri(uri);
     }
   };
+  const handleSelectImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      // setSelectedImage(result.uri);
+      setPhotoUri(result.uri);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView style={innerStyles.container}>
@@ -128,37 +148,28 @@ export default function CreatePostsScreen() {
                 </View>
               </View>
               <View style={innerStyles.smallButton}>
-            <IconFlipCamera
-                        name="camera-flip-outline"
-                        size={24}
-              onPress={
-                photoUri
-                  ? null
-                  : () => {
-                      setType(
-                        type === Camera.Constants.Type.back
-                          ? Camera.Constants.Type.front
-                          : Camera.Constants.Type.back
-                      );
-                    }
-              }
-            />
-          </View>
+                <IconFlipCamera
+                  name="camera-flip-outline"
+                  size={24}
+                  onPress={
+                    photoUri
+                      ? null
+                      : () => {
+                          setType(
+                            type === Camera.Constants.Type.back
+                              ? Camera.Constants.Type.front
+                              : Camera.Constants.Type.back
+                          );
+                        }
+                  }
+                />
+              </View>
             </Camera>
           )
         )}
-        <View style={innerStyles.buttonsContainer}>
-          
-          <View style={innerStyles.smallButton}>
-            <AntDesign
-              name="delete"
-              size={24}
-              color={!photoUri ? "#bdbdbd" : "black"}
-              onPress={onDelPress}
-            />
-          </View>
-        </View>
-
+        <Pressable onPress={handleSelectImage}>
+          <Text style={innerStyles.text}>Завантажте фото</Text>
+        </Pressable>
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
@@ -207,28 +218,49 @@ export default function CreatePostsScreen() {
             Опубліковати
           </Text>
         </TouchableOpacity>
+
+        <View style={{ marginTop: "auto" }}>
+          <View style={innerStyles.trashButton}>
+            <AntDesign
+              name="delete"
+              size={24}
+              color={!photoUri ? "#bdbdbd" : "black"}
+              onPress={onDelPress}
+            />
+          </View>
+        </View>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
 }
 
 const innerStyles = StyleSheet.create({
+  trashButton: {
+    backgroundColor: "#F6F6F6",
+    marginTop: "auto",
+    width: 70,
+    height: 40,
+    borderRadius: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
   buttonsContainer: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
+    marginBottom: 44,
   },
   smallButton: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
     height: 40,
     width: 70,
-    borderRadius: 20,
     display: "flex",
-    // justifyContent: "center",
-    // alignItems: "center",
-    marginTop: "auto",
-    // backgroundColor: "#F6F6F6",
-    // alignSelf: "center",
   },
   container: {
     paddingHorizontal: 16,
@@ -284,6 +316,14 @@ const innerStyles = StyleSheet.create({
     color: "#BDBDBD",
     marginTop: 16,
     marginBottom: 16,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: 400,
+    lineHeight: 19,
+    textAlign: "left",
+    color: "#BDBDBD",
+    marginTop: 10,
   },
   input: {
     height: 40,
